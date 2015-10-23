@@ -42,20 +42,17 @@ public class POJ1112 {
             //找到第一对互不相识的
             int leftSample=-1;
             int rightSample=-1;
-            find:while (true) {
+            find:while (pool.size()!=0) {
                 Integer candidate = pool.poll();
-                int count=pool.size();
-                for (int i=0;i<count;i++) {
-                    Integer choose=pool.poll();
+                for (Integer choose:pool) {
                     if (!ref[candidate][choose] || !ref[choose][candidate]) {
-                        leftSample=candidate;
-                        rightSample=choose;
-                        pool.remove((Object)rightSample);
+                        leftSample = candidate;
+                        rightSample = choose;
+                        pool.remove((Object) choose);
                         break find;
                     }
                 }
                 common.addLast(candidate);
-                pool.remove((Object) candidate);
             }
             if(leftSample==-1)
                 break;
@@ -67,39 +64,33 @@ public class POJ1112 {
             pairs.add(pair);
             for (int i=0;i<pool.size();i++) {
                 Integer candidate=pool.poll();
-                Integer leftKown = isKown(candidate, pair.left);
-                Integer rightKown = isKown(candidate, pair.right);
-                if (leftKown!=0&& rightKown!=0) {
+                boolean leftKown = isKown(candidate, pair.left);
+                boolean rightKown = isKown(candidate, pair.right);
+                if (!leftKown && !rightKown) {
                     success=false;
                     break whole;
                 }
-                if (leftKown ==0&& rightKown==0) {
+                if (leftKown&& rightKown) {
                     pool.addLast(candidate);
                     continue ;
                 }
                 i=-1;
-                if (leftKown == 0) {
+                if (leftKown) {
                     pair.left.addLast(candidate);
-                    pair.right.addLast(rightKown);
-                    pool.remove((Object)rightKown);
                 } else {
-                    pair.left.addLast(leftKown);
                     pair.right.addLast(candidate);
-                    pool.remove((Object)leftKown);
                 }
             }
         }
     }
 
-    private static Integer isKown(Integer candidate, LinkedList<Integer> left) {
-        while (left.size() != 0) {
-            Integer choose=left.poll();
+    private static boolean isKown(Integer candidate, LinkedList<Integer> left) {
+        for (Integer choose : left) {
             if (!ref[candidate][choose] || !ref[choose][candidate]) {
-
-                return choose;
+                return false;
             }
         }
-        return 0;
+        return true;
     }
 
 
