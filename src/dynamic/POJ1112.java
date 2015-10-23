@@ -36,7 +36,7 @@ public class POJ1112 {
         }
         LinkedList<Pair> pairs=new LinkedList<>();
         boolean success=true;
-        while (true) {
+        whole:while (true) {
             if(!success)
                 break;
             //找到第一对互不相识的
@@ -44,14 +44,18 @@ public class POJ1112 {
             int rightSample=-1;
             find:while (true) {
                 Integer candidate = pool.poll();
-                for (Integer choose : pool) {
+                int count=pool.size();
+                for (int i=0;i<count;i++) {
+                    Integer choose=pool.poll();
                     if (!ref[candidate][choose] || !ref[choose][candidate]) {
                         leftSample=candidate;
                         rightSample=choose;
+                        pool.remove((Object)rightSample);
                         break find;
                     }
                 }
                 common.addLast(candidate);
+                pool.remove((Object) candidate);
             }
             if(leftSample==-1)
                 break;
@@ -61,12 +65,42 @@ public class POJ1112 {
             pair.left.addLast(leftSample);
             pair.right.addLast(rightSample);
             pairs.add(pair);
-            for (Integer candidate : pool) {
-
+            for (int i=0;i<pool.size();i++) {
+                Integer candidate=pool.poll();
+                Integer leftKown = isKown(candidate, pair.left);
+                Integer rightKown = isKown(candidate, pair.right);
+                if (leftKown!=0&& rightKown!=0) {
+                    success=false;
+                    break whole;
+                }
+                if (leftKown ==0&& rightKown==0) {
+                    pool.addLast(candidate);
+                    continue ;
+                }
+                i=-1;
+                if (leftKown == 0) {
+                    pair.left.addLast(candidate);
+                    pair.right.addLast(rightKown);
+                    pool.remove((Object)rightKown);
+                } else {
+                    pair.left.addLast(leftKown);
+                    pair.right.addLast(candidate);
+                    pool.remove((Object)leftKown);
+                }
             }
         }
     }
 
+    private static Integer isKown(Integer candidate, LinkedList<Integer> left) {
+        while (left.size() != 0) {
+            Integer choose=left.poll();
+            if (!ref[candidate][choose] || !ref[choose][candidate]) {
+
+                return choose;
+            }
+        }
+        return 0;
+    }
 
 
 }
