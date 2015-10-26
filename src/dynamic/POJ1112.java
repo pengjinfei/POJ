@@ -72,6 +72,7 @@ public class POJ1112 {
             if (pool.size() == 0)
                 break;
             for (int i = 0; i < pool.size(); i++) {
+                //TODO 可以只与pair的尾部相比较
                 Integer candidate = pool.poll();
                 boolean leftKown = isKown(candidate, pair.left);
                 boolean rightKown = isKown(candidate, pair.right);
@@ -135,7 +136,7 @@ public class POJ1112 {
                     choose[i - 1] = false;
             }
         }
-
+        //TODO 去除排序
         Comparator<Integer> comparator = new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
